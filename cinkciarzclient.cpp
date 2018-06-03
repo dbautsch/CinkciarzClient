@@ -3,6 +3,9 @@
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
+#include <QFile>
+#include <QDebug>
+#include <QCoreApplication>
 
 static const QString currenciesUrl = "https://cinkciarz.pl/kantor/kursy-walut-cinkciarz-pl";
 
@@ -39,14 +42,92 @@ void CinkciarzClient::HttpGetFinished()
     QString data = reply->readAll();
     reply->deleteLater();
 
-    QList<CurrencyInformation> currenciesInformation;
-    ParseNetworkReply(currenciesInformation, data);
+    CurrencyInformationList currenciesInformation50k;
+    CurrencyInformationList currenciesInformation;
 
-    emit CurrenciesReady(currenciesInformation);
+    ParseNetworkReply(currenciesInformation50k,
+                      currenciesInformation,
+                      data);
+
+    emit CurrenciesReady(currenciesInformation50k, currenciesInformation);
 }
 
-void CinkciarzClient::ParseNetworkReply(QList<CurrencyInformation> & currenciesInformation,
+void CinkciarzClient::ParseNetworkReply(CurrencyInformationList &currenciesInformation50k,
+                                        CurrencyInformationList & currenciesInformation,
                                         QString data)
 {
+#ifdef DUMP_RESPONSES
+    QFile f(QCoreApplication::applicationDirPath() + "/response.html");
 
+    if (f.open(QIODevice::WriteOnly | QIODevice::Text) == false)
+    {
+        qDebug() << "Unable to create response.html file";
+    }
+    else
+    {
+        QTextStream s(&f);
+        s << data;
+        s.flush();
+        f.close();
+    }
+#endif // DUMP_RESPONSES defined
+
+    if (data.length() == 0)
+    {
+        return;
+    }
+
+    QString currencyData50k, currencyData;
+
+    Get50kUnitsCurrencyData(data, currencyData50k);
+    ParseCurrencyData(currencyData50k, currenciesInformation50k);
+
+    Get1UnitCurrencyData(data, currencyData);
+    ParseCurrencyData(currencyData, currenciesInformation);
+}
+
+void CinkciarzClient::ParseCurrencyData(QString currencyData, CurrencyInformationList & currencyInformation)
+{
+
+}
+
+void CinkciarzClient::Get50kUnitsCurrencyData(QString data, QString & currencyData)
+{
+
+}
+
+void CinkciarzClient::Get1UnitCurrencyData(QString data, QString & currencyData)
+{
+
+}
+
+QString CinkciarzClient::ExtractElementFromString(QString data,
+                                                  QString first,
+                                                  QString second,
+                                                  QString third,
+                                                  int startFrom)
+{
+    auto firstPos = data.indexOf(first, startFrom);
+
+    if (firstPos < 0)
+    {
+        return QString();
+    }
+
+    auto secondPos = data.indexOf(second, firstPos + first.length());
+
+    if (secondPos < 0)
+    {
+        return QString();
+    }
+
+    auto thirdPos = data.indexOf(third, secondPos + second.length());
+
+    if (thirdPos < 0)
+    {
+        return QString();
+    }
+
+    return data.mid(secondPos + second.length(),
+                    thirdPos - (secondPos + second.length()));
 }

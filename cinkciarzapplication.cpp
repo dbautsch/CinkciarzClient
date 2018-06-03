@@ -48,7 +48,8 @@ void CinkciarzApplication::finishApplication()
     emit finished();
 }
 
-void CinkciarzApplication::OnCurrenciesReady(QList<CurrencyInformation> currenciesInformation)
+void CinkciarzApplication::OnCurrenciesReady(CurrencyInformationList currenciesInformation50k,
+                                             CurrencyInformationList currenciesInformation)
 {
 
 }

@@ -7,8 +7,6 @@
 
 class QNetworkAccessManager;
 
-using CurrencyInformationList = QList<CurrencyInformation>;
-
 class CinkciarzClient : public QObject
 {
 private:
@@ -17,15 +15,30 @@ private:
     QNetworkAccessManager * networkManager = nullptr;
 
     void HttpGet(QString url);
-    void ParseNetworkReply(QList<CurrencyInformation> & currenciesInformation,
+
+    void ParseNetworkReply(CurrencyInformationList &currenciesInformation50k,
+                           CurrencyInformationList & currenciesInformation,
                            QString data);
+
+    void ParseCurrencyData(QString currencyData, CurrencyInformationList & currencyInformation);
+
+    void Get50kUnitsCurrencyData(QString data, QString & currencyData);
+
+    void Get1UnitCurrencyData(QString data, QString & currencyData);
+
+    static QString ExtractElementFromString(QString data,
+                                            QString first,
+                                            QString second,
+                                            QString third,
+                                            int startFrom = 0);
 
 public:
     explicit CinkciarzClient(QNetworkAccessManager * networkManager,
                              QObject *parent = nullptr);
 
 signals:
-    void CurrenciesReady(QList<CurrencyInformation> currenciesInformation);
+    void CurrenciesReady(CurrencyInformationList currenciesInformation50k,
+                         CurrencyInformationList currenciesInformation);
 
 private slots:
     void HttpGetFinished();

@@ -9,4 +9,6 @@ typedef struct
 }
 CurrencyInformation;
 
+using CurrencyInformationList = QList<CurrencyInformation>;
+
 #endif // CURRENCYINFORMATION_H

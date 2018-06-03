@@ -28,7 +28,8 @@ signals:
     void FetchCurrencies();
 
 private slots:
-    void OnCurrenciesReady(QList<CurrencyInformation> currenciesInformation);
+    void OnCurrenciesReady(CurrencyInformationList currenciesInformation50k,
+                           CurrencyInformationList currenciesInformation);
     void OnCurrencyFetchTimer();
 
 public slots:
