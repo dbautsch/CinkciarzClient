@@ -86,32 +86,57 @@ void CinkciarzClient::ParseNetworkReply(CurrencyInformationList &currenciesInfor
     ParseCurrencyData(currencyData, currenciesInformation);
 }
 
-void CinkciarzClient::ParseCurrencyData(QString currencyData, CurrencyInformationList & currencyInformation)
+void CinkciarzClient::ParseCurrencyData(QString currencyData,
+                                        CurrencyInformationList & currencyInformation)
 {
+    int previousLocation = -1;
+    int lastPos;
+    CurrencyInformation info;
+
+    while (GetNextCurrencyInformation(currencyData,
+                                      previousLocation,
+                                      info,
+                                      lastPos))
+    {
+        currencyInformation.push_back(info);
+        previousLocation = lastPos;
+    }
 
 }
 
 void CinkciarzClient::Get50kUnitsCurrencyData(QString data, QString & currencyData)
 {
-
+    currencyData = ExtractElementFromString(data,
+                                            "<div role=\"tabpanel\"",
+                                            "id=\"for-50k\">",
+                                            "</tbody>");
 }
 
 void CinkciarzClient::Get1UnitCurrencyData(QString data, QString & currencyData)
 {
-
+    currencyData = ExtractElementFromString(data,
+                                            "<div role=\"tabpanel\"",
+                                            "id=\"for-1\">",
+                                            "</tbody>");
 }
 
 QString CinkciarzClient::ExtractElementFromString(QString data,
                                                   QString first,
                                                   QString second,
                                                   QString third,
-                                                  int startFrom)
+                                                  int startFrom,
+                                                  int *firstOccurencePos)
 {
     auto firstPos = data.indexOf(first, startFrom);
 
     if (firstPos < 0)
     {
         return QString();
+    }
+
+    if (firstOccurencePos != nullptr)
+    {
+        *firstOccurencePos = firstPos;
     }
 
     auto secondPos = data.indexOf(second, firstPos + first.length());
@@ -130,4 +155,55 @@ QString CinkciarzClient::ExtractElementFromString(QString data,
 
     return data.mid(secondPos + second.length(),
                     thirdPos - (secondPos + second.length()));
+}
+
+bool CinkciarzClient::GetNextCurrencyInformation(QString data,
+                                                 int previousLocation,
+                                                 CurrencyInformation & currencyInformation,
+                                                 int &lastPos)
+{
+    if (previousLocation < 0)
+    {
+        previousLocation = 0;
+    }
+
+    int occurencePos;
+
+    currencyInformation.name = (ExtractElementFromString(data,
+                                                         "<td data-label=\"Nazwa\">",
+                                                         "\">",
+                                                         "</a>",
+                                                         previousLocation,
+                                                         &occurencePos)).trimmed();
+    previousLocation = occurencePos;
+
+    currencyInformation.code = (ExtractElementFromString(data,
+                                                         "\"Kod waluty\">",
+                                                         "</strong>",
+                                                         "</td>",
+                                                         previousLocation,
+                                                         &occurencePos)).trimmed();
+
+    previousLocation = occurencePos;
+
+    currencyInformation.buyingValue = (ExtractElementFromString(data,
+                                                                "data-buy=\"true",
+                                                                "\">",
+                                                                "</td>",
+                                                                previousLocation,
+                                                                &occurencePos)).trimmed();
+
+    previousLocation = occurencePos;
+
+    currencyInformation.sellingValue = (ExtractElementFromString(data,
+                                                                 "data-sell=\"true",
+                                                                 "\">",
+                                                                 "</td>",
+                                                                 previousLocation,
+                                                                 &occurencePos)).trimmed();
+
+
+    lastPos = occurencePos;
+
+    return currencyInformation.IsValid();
 }

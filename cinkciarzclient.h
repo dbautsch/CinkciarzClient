@@ -30,7 +30,13 @@ private:
                                             QString first,
                                             QString second,
                                             QString third,
-                                            int startFrom = 0);
+                                            int startFrom = 0,
+                                            int * firstOccurencePos = nullptr);
+
+    bool GetNextCurrencyInformation(QString data,
+                                    int previousLocation,
+                                    CurrencyInformation & currencyInformation,
+                                    int & lastPos);
 
 public:
     explicit CinkciarzClient(QNetworkAccessManager * networkManager,
