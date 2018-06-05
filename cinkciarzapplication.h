@@ -6,6 +6,7 @@
 #include "currencyinformation.h"
 
 class CinkciarzClient;
+class Configuration;
 
 class QNetworkAccessManager;
 class QTimer;
@@ -19,6 +20,11 @@ private:
     QNetworkAccessManager * networkManager = nullptr;
     QTimer * currencyFetchTimer = nullptr;
 
+    void StopClient();
+    void StartClient();
+    void ApplyConfiguration(Configuration * conf);
+    bool ClientIsRunning() const;
+
 public:
     explicit CinkciarzApplication(QObject *parent = nullptr);
     ~CinkciarzApplication();
@@ -31,6 +37,8 @@ private slots:
     void OnCurrenciesReady(CurrencyInformationList currenciesInformation50k,
                            CurrencyInformationList currenciesInformation);
     void OnCurrencyFetchTimer();
+    void ConfigurationRead();
+    void ConfigurationError(QString message);
 
 public slots:
     void run();

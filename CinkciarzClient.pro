@@ -21,9 +21,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
     cinkciarzapplication.cpp \
-    cinkciarzclient.cpp
+    cinkciarzclient.cpp \
+    configuration.cpp
 
 HEADERS += \
     cinkciarzapplication.h \
     cinkciarzclient.h \
-    currencyinformation.h
+    currencyinformation.h \
+    configuration.h
