@@ -202,6 +202,8 @@ bool CinkciarzClient::GetNextCurrencyInformation(QString data,
                                                                  previousLocation,
                                                                  &occurencePos)).trimmed();
 
+    currencyInformation.timestampUTC = QDateTime::currentDateTimeUtc();
+
 
     lastPos = occurencePos;
 

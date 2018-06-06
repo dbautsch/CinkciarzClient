@@ -13,7 +13,16 @@ private:
 public:
     explicit Configuration(QObject *parent = nullptr);
 
+    // Currency fetching data
     int intervalMsec = 10000;
+
+    // Database configuration
+    QString dbDriverName;
+    QString dbUserName;
+    QString dbPassword;
+    QString dbName;
+    QString dbHostname;
+    int dbPort = 0;
 
 signals:
     void ConfigurationRead();

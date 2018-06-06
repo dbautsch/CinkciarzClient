@@ -1,6 +1,6 @@
 QT -= gui
 
-QT += network
+QT += network sql
 
 CONFIG += c++11 console
 CONFIG -= app_bundle
@@ -22,10 +22,12 @@ SOURCES += \
         main.cpp \
     cinkciarzapplication.cpp \
     cinkciarzclient.cpp \
-    configuration.cpp
+    configuration.cpp \
+    datastorage.cpp
 
 HEADERS += \
     cinkciarzapplication.h \
     cinkciarzclient.h \
     currencyinformation.h \
-    configuration.h
+    configuration.h \
+    datastorage.h

@@ -39,11 +39,26 @@ void Configuration::ReadConfigurationFile()
         }
 
         QJsonObject obj = configFile.object();
+
+        // Currency fetching configuration
         QJsonObject currenciesFetcherConfig = obj.value("currenciesFetcher").toObject();
 
         if (currenciesFetcherConfig.isEmpty() == false)
         {
-            intervalMsec = currenciesFetcherConfig.value("intervalMs").toVariant().toInt();
+            intervalMsec = currenciesFetcherConfig.value("intervalMs").toInt();
+        }
+
+        // Database configuration
+        QJsonObject dbConfiguration = obj.value("database").toObject();
+
+        if (dbConfiguration.isEmpty() == false)
+        {
+            dbDriverName = dbConfiguration.value("driverName").toString();
+            dbUserName = dbConfiguration.value("userName").toString();
+            dbPassword = dbConfiguration.value("password").toString();
+            dbName = dbConfiguration.value("name").toString();
+            dbHostname = dbConfiguration.value("hostname").toString();
+            dbPort = dbConfiguration.value("port").toInt();
         }
     }
     else

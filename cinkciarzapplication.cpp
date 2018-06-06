@@ -2,12 +2,14 @@
 
 #include "cinkciarzclient.h"
 #include "configuration.h"
+#include "datastorage.h"
 
 #include <QtNetwork/QNetworkAccessManager>
 #include <QTimer>
 
 CinkciarzApplication::CinkciarzApplication(QObject *parent) : QObject(parent)
 {
+    ////
     configuration = new Configuration();
 
     connect(configuration,
@@ -20,6 +22,35 @@ CinkciarzApplication::CinkciarzApplication(QObject *parent) : QObject(parent)
             this,
             &CinkciarzApplication::ConfigurationError);
 
+    ///
+    storage = new DataStorage();
+
+    connect(this,
+            &CinkciarzApplication::StoreCurrencies50kU,
+            storage,
+            &DataStorage::StoreCurrencies50kU);
+
+    connect(this,
+            &CinkciarzApplication::StoreCurrencies1U,
+            storage,
+            &DataStorage::StoreCurrencies1U);
+
+    connect(storage,
+            &DataStorage::DatabaseConnected,
+            this,
+            &CinkciarzApplication::DatabaseConnected);
+
+    connect(storage,
+            &DataStorage::DatabaseError,
+            this,
+            &CinkciarzApplication::DatabaseError);
+
+    connect(this,
+            &CinkciarzApplication::StorageConnect,
+            storage,
+            &DataStorage::Connect);
+
+    ////
     networkManager = new QNetworkAccessManager();
 
     currencyFetchTimer = new QTimer();
@@ -29,6 +60,7 @@ CinkciarzApplication::CinkciarzApplication(QObject *parent) : QObject(parent)
             this,
             &CinkciarzApplication::OnCurrencyFetchTimer);
 
+    ////
     client = new CinkciarzClient(networkManager, this);
 
     connect(client,
@@ -63,7 +95,8 @@ void CinkciarzApplication::finishApplication()
 void CinkciarzApplication::OnCurrenciesReady(CurrencyInformationList currenciesInformation50k,
                                              CurrencyInformationList currenciesInformation)
 {
-
+    emit StoreCurrencies1U(currenciesInformation);
+    emit StoreCurrencies50kU(currenciesInformation50k);
 }
 
 void CinkciarzApplication::OnCurrencyFetchTimer()
@@ -76,13 +109,7 @@ void CinkciarzApplication::OnCurrencyFetchTimer()
 
 void CinkciarzApplication::ConfigurationRead()
 {
-    if (ClientIsRunning())
-    {
-        StopClient();
-    }
-
-    ApplyConfiguration(configuration);
-    StartClient();
+    emit StorageConnect();
 }
 
 void CinkciarzApplication::StopClient()
@@ -109,5 +136,25 @@ void CinkciarzApplication::ApplyConfiguration(Configuration * conf)
 
 void CinkciarzApplication::ConfigurationError(QString message)
 {
+    qDebug() << "Configuration error: " << message;
 
+    finishApplication();
+}
+
+void CinkciarzApplication::DatabaseError(QString message)
+{
+    qDebug() << "Database error: " << message;
+
+    finishApplication();
+}
+
+void CinkciarzApplication::DatabaseConnected()
+{
+    if (ClientIsRunning())
+    {
+        StopClient();
+    }
+
+    ApplyConfiguration(configuration);
+    StartClient();
 }
