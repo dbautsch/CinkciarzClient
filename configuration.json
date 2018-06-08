@@ -1,0 +1,13 @@
+{
+	"currenciesFetcher" : {
+		"intervalMs": 30000
+	},
+	"database" : {
+		"driverName": "QSQLITE",
+		"userName": "",
+		"password": "",
+		"name": "./database.sqlite",
+		"hostname": "",
+		"port": 0
+	}
+}
