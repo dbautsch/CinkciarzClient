@@ -13,6 +13,9 @@ private:
 
     QSqlDatabase db;
 
+    void StoreCurrencies(CurrencyInformationList currencies, QString units);
+    void StoreCurrency(const CurrencyInformation & currencyInformation, QString units);
+
 public:
     explicit DataStorage(QObject *parent = nullptr);
 
