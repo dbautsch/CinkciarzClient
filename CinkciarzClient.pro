@@ -5,6 +5,9 @@ QT += network sql
 CONFIG += c++11 console
 CONFIG -= app_bundle
 
+win32:VERSION = 1.0.0.0 # major.minor.patch.build
+else:VERSION = 1.0.0    # major.minor.patch
+
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the

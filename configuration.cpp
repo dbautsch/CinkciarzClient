@@ -2,6 +2,7 @@
 
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonArray>
 #include <QFile>
 #include <QTextStream>
 #include <QCoreApplication>
@@ -26,6 +27,8 @@ void Configuration::ReadConfiguration()
 
 void Configuration::ReadConfigurationFile()
 {
+    ResetConfiguration();
+
     QFile jsonFile(QCoreApplication::applicationDirPath() + "/" + configurationFileName);
     if (jsonFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
@@ -46,6 +49,16 @@ void Configuration::ReadConfigurationFile()
         if (currenciesFetcherConfig.isEmpty() == false)
         {
             intervalMsec = currenciesFetcherConfig.value("intervalMs").toInt();
+
+            if (currenciesFetcherConfig.value("excludedDays").isArray())
+            {
+                auto excludedDaysArray = currenciesFetcherConfig.value("excludedDays").toArray();
+
+                foreach(QJsonValue arrayItem, excludedDaysArray)
+                {
+                    excludedDays.push_back(arrayItem.toInt());
+                }
+            }
         }
 
         // Database configuration
@@ -65,4 +78,12 @@ void Configuration::ReadConfigurationFile()
     {
         emit ConfigurationError("Unable to open configuration file.");
     }
+}
+
+void Configuration::ResetConfiguration()
+{
+    intervalMsec = 10000;
+    excludedDays.clear();
+
+    dbPort = 0;
 }

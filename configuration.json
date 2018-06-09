@@ -1,6 +1,7 @@
 {
 	"currenciesFetcher" : {
-		"intervalMs": 30000
+		"intervalMs": 30000,
+		"excludedDays": [6, 7]
 	},
 	"database" : {
 		"driverName": "QSQLITE",

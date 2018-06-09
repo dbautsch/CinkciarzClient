@@ -9,12 +9,14 @@ private:
     Q_OBJECT
 
     void ReadConfigurationFile();
+    void ResetConfiguration();
 
 public:
     explicit Configuration(QObject *parent = nullptr);
 
     // Currency fetching data
     int intervalMsec = 10000;
+    QList<int> excludedDays;
 
     // Database configuration
     QString dbDriverName;

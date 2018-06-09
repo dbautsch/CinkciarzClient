@@ -101,6 +101,15 @@ void CinkciarzApplication::OnCurrenciesReady(CurrencyInformationList currenciesI
 
 void CinkciarzApplication::OnCurrencyFetchTimer()
 {
+    QDateTime now = QDateTime::currentDateTime();
+    auto dayOfWeek = now.date().dayOfWeek();
+
+    if (configuration->excludedDays.contains(dayOfWeek))
+    {
+        /* Ignore event, current day is excluded from fetching currencies */
+        return;
+    }
+
     if (client != nullptr)
     {
         emit FetchCurrencies();
